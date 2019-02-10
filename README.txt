@@ -21,7 +21,7 @@ acl2
 ----
 - skip shell display
 - send-form.lisp
-- emacs-ecl2.el
+- emacs-acl2.el
 
 
 other
