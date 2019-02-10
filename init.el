@@ -102,19 +102,6 @@
                 (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
 
 (fset 'yes-or-no-p 'y-or-n-p)
-;; -------------------- THEME(s) --------------------
-
-;; (use-package zenburn-theme
-;;   :ensure t)
-
-(use-package gruvbox-theme
-  :ensure t
-  :config (load-theme 'gruvbox-dark-medium))
-
-;; (use-package monokai-theme
-;;   :ensure t)
-
-
 
 ;; -------------------- Mode line customizations --------------------
 
@@ -313,5 +300,20 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((((class color) (min-colors 16777215)) (:background "#282828" :foreground "#fdf4c1")) (((class color) (min-colors 255)) (:background "#262626" :foreground "#ffffaf")))))
+
+
+;; -------------------- THEME(s) --------------------
+
+;; (use-package zenburn-theme
+;;   :ensure t)
+
+(use-package gruvbox-theme
+  :ensure t
+  :config (load-theme 'gruvbox-dark-medium))
+
+;; (use-package monokai-theme
+;;   :ensure t)
+
 ;;; init.el ends here
+
 
