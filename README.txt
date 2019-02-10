@@ -17,7 +17,7 @@ Atharva's emacs config
 * company
 
 
-acl2p
+acl2
 ----
 - skip shell display
 - send-form.lisp
