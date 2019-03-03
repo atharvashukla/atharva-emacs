@@ -14,7 +14,8 @@
 (setq ns-use-proxy-icon nil)
 (setq frame-title-format nil)
 
-
+;; no backup  file creation
+(setq make-backup-files nil)
 
 ;; don't need the toolbar - removing this
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -59,7 +60,7 @@
 (provide 'init)
 
 ;; a themes folder is necessary
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+;;  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
 
 ;; -------------------- Package Setup machinery --------------------
@@ -82,6 +83,19 @@
 
 (require 'use-package)
 
+
+;; -------------------- sml mode --------------------
+
+(use-package sml-mode
+  :ensure t
+  :defer t)
+
+(autoload 'sml-mode  "sml-mode" "Mode for editing SML." t)
+(setenv "PATH" (concat "/usr/local/Cellar/smlnj/110.84/bin:" (getenv "PATH")))
+(setq exec-path (cons "/usr/local/Cellar/smlnj/110.84/bin"  exec-path))
+(setq sml-program-name "sml")
+(global-font-lock-mode 1)
+
 ;; -------------------- smart parens --------------------
 
 (use-package smartparens-config
@@ -93,12 +107,16 @@
 (add-hook 'prog-mode-hook #'smartparens-mode)
 
 (defun nuke-all-buffers ()
-  "kill all buffers, leaving *scratch* only"
   (interactive)
   (mapcar (lambda (x) (kill-buffer x))
 	  (buffer-list))
   (delete-other-windows))
 
+
+;; -------------------- Org mode settings --------------------
+
+;; remove the org footer details. 
+(setq org-html-postamble nil)
 
 ;; -------------------- Org bullet --------------------
 
@@ -140,10 +158,10 @@
 ;;   :ensure t)
 
 
-(use-package swiper
-  :ensure t
-  :config
-  (progn (global-set-key "\C-s" 'swiper)))
+;; (use-package swiper
+;;   :ensure t
+;;   :config
+;;   (progn (global-set-key "\C-s" 'swiper)))
 
 ;; -------------------- Racket mode --------------------
 
@@ -195,7 +213,7 @@
   :ensure t
   :defer t
   :config
-  (setq TeX-engine 'xetex)                                                       
+  (setq TeX-engine 'xetex)
   (setq latex-run-command "xelatex"))
 
 (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
@@ -277,9 +295,9 @@
 ;; not ready yet
 
 ;; -------------------- AVY --------------------
-(use-package avy
-  :ensure t
-  :bind ("M-s" . avy-goto-char))
+;; (use-package avy
+;;   :ensure t
+;;   :bind ("M-s" . avy-goto-char))
 
 
 ;; -------------------- Company mode --------------------
@@ -299,181 +317,21 @@
 
 (put 'downcase-region 'disabled nil)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("2a9039b093df61e4517302f40ebaf2d3e95215cb2f9684c8c1a446659ee226b9" "a622aaf6377fe1cd14e4298497b7b2cae2efc9e0ce362dade3a58c16c89e089c" "e2fd81495089dc09d14a88f29dfdff7645f213e2c03650ac2dd275de52a513de" default)))
- '(package-selected-packages
-   (quote
-    (smartparens monokai-theme monokai gruvbox-theme gruvbox-dark-medium company avy evil god-mode flycheck yasnippet-snippets yasnippet auctex racket-mode org-bullets use-package))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((((class color) (min-colors 16777215)) (:background "#282828" :foreground "#fdf4c1")) (((class color) (min-colors 255)) (:background "#262626" :foreground "#ffffaf")))))
-
-
 ;; -------------------- THEME(s) --------------------
 
 ;; (use-package zenburn-theme
 ;;   :ensure t)
 
-(use-package gruvbox-theme
-  :ensure t
-  :config (load-theme 'gruvbox-dark-medium))
+;; (use-package gruvbox-theme
+;;  :ensure t
+;;  :config (load-theme 'gruvbox-dark-medium))
 
 ;; (use-package monokai-theme
 ;;   :ensure t)
 
 
-;; -----------------------------------------------------------------buffmove-----
 
-;;; buffer-move.el --- 
-
-;; Copyright (C) 2004-2014  Lucas Bonnet <lucas@rincevent.net.fr>
-
-;; Author: Lucas Bonnet <lucas@rincevent.net>
-;; Keywords: lisp,convenience
-;; Version: 0.5
-;; URL : https://github.com/lukhas/buffer-move
-
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 2
-;; of the License, or (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, write to the Free Software
-;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-;; 02111-1307, USA.
-
-;;; Commentary:
-
-;; This file is for lazy people wanting to swap buffers without
-;; typing C-x b on each window. This is useful when you have :
-
-;; +--------------+-------------+
-;; |              |             |
-;; |    #emacs    |    #gnus    |
-;; |              |             |
-;; +--------------+-------------+
-;; |                            |
-;; |           .emacs           |
-;; |                            |
-;; +----------------------------+
-
-;; and you want to have :
-
-;; +--------------+-------------+
-;; |              |             |
-;; |    #gnus     |   .emacs    |
-;; |              |             |
-;; +--------------+-------------+
-;; |                            |
-;; |           #emacs           |
-;; |                            |
-;; +----------------------------+
-
-;; With buffer-move, just go in #gnus, do buf-move-left, go to #emacs
-;; (which now should be on top right) and do buf-move-down.
-
-;; To use it, simply put a (require 'buffer-move) in your ~/.emacs and
-;; define some keybindings. For example, i use :
-
-;; (global-set-key (kbd "<C-S-up>")     'buf-move-up)
-;; (global-set-key (kbd "<C-S-down>")   'buf-move-down)
-;; (global-set-key (kbd "<C-S-left>")   'buf-move-left)
-;; (global-set-key (kbd "<C-S-right>")  'buf-move-right)
-
-
-;;; Code:
-
-
-(require 'windmove)
-
-;;;###autoload
-(defun buf-move-up ()
-  "Swap the current buffer and the buffer above the split.
-If there is no split, ie now window above the current one, an
-error is signaled."
-;;  "Switches between the current buffer, and the buffer above the
-;;  split, if possible."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'up))
-	 (buf-this-buf (window-buffer (selected-window))))
-    (if (null other-win)
-        (error "No window above this one")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
-
-;;;###autoload
-(defun buf-move-down ()
-"Swap the current buffer and the buffer under the split.
-If there is no split, ie now window under the current one, an
-error is signaled."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'down))
-	 (buf-this-buf (window-buffer (selected-window))))
-    (if (or (null other-win) 
-            (string-match "^ \\*Minibuf" (buffer-name (window-buffer other-win))))
-        (error "No window under this one")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
-
-;;;###autoload
-(defun buf-move-left ()
-"Swap the current buffer and the buffer on the left of the split.
-If there is no split, ie now window on the left of the current
-one, an error is signaled."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'left))
-	 (buf-this-buf (window-buffer (selected-window))))
-    (if (null other-win)
-        (error "No left split")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
-
-;;;###autoload
-(defun buf-move-right ()
-"Swap the current buffer and the buffer on the right of the split.
-If there is no split, ie now window on the right of the current
-one, an error is signaled."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'right))
-	 (buf-this-buf (window-buffer (selected-window))))
-    (if (null other-win)
-        (error "No right split")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
-
-
-(provide 'buffer-move)
-;;; buffer-move.el ends here
-
-
-
+;; had buffer-move here
 
 ;;; init.el ends here
 
