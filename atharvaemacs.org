@@ -1,0 +1,140 @@
+#+TITLE: atharvaemacs
+#+OPTIONS: toc:nil num:nil
+* Startup customizations
+ no message on startup
+ open todo on startup
+ full  screen  on startup
+   #+BEGIN_SRC emacs-lisp
+   (setq inhibit-startup-message t)
+   (setq initial-buffer-choice "~/Documents/todo/todo.org")
+   (add-to-list 'default-frame-alist '(fullscreen . maximized))
+   #+END_SRC
+* Utility functions
+ nuke-all-buffers
+ open my husky ssh through tramp
+   #+BEGIN_SRC emacs-lisp
+   (defun nuke-all-buffers ()
+   (interactive)
+     (mapcar (lambda (x) (kill-buffer x))
+   	  (buffer-list))
+     (delete-other-windows))
+   (defun cppenv ()
+     (interactive)
+     (let ((default-directory "/ssh:husky1999@login.ccs.neu.edu:"))
+       (shell)))
+   #+END_SRC
+* Visual
+** UI customizations
+  no scrollbar
+  cleaning the title bar
+  no toolbar
+    #+BEGIN_SRC emacs-lisp
+    (scroll-bar-mode -1)
+    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+    (add-to-list 'default-frame-alist '(ns-appearance . dark)) 
+    (setq ns-use-proxy-icon nil)
+    (setq frame-title-format nil)
+    (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+    #+END_SRC
+
+** Mode line Customizations
+  displays the time in the modeline
+  displays the column number in the modeline
+    #+BEGIN_SRC emacs-lisp
+    (display-time-mode 1)
+    (column-number-mode 1)
+    #+END_SRC
+** Font setup
+ A bigger font size on startup and (commented out) the IBM VGA9 font <3
+    #+BEGIN_SRC emacs-lisp
+    (set-face-attribute 'default nil :height 200)
+    ; (set-frame-font "PxPlus IBM VGA9" nil t)
+    #+END_SRC
+* Custom Keybindings
+ yes or no to y or n
+ Escape-Escape-C to open the init
+   #+BEGIN_SRC emacs-lisp
+   (fset 'yes-or-no-p 'y-or-n-p)
+   (global-set-key (kbd "\e\ec")
+   (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
+   #+END_SRC
+
+* Languages
+** Racket mode
+  Setting up use-package for racket mode (and the racket exec is in ~/usr/loca/bin/racket~
+    #+BEGIN_SRC emacs-lisp
+    (use-package racket-mode
+      :ensure t
+      :config (setq racket-program "/usr/local/bin/racket"))
+    #+END_SRC
+
+** ACL2 setup
+   don't open the shell at startup
+  (path to) pete's shortcuts for emacs from computer aided reasoning
+  (path to) emacs-acl2 that ships with the acl2 repo
+    #+BEGIN_SRC emacs-lisp
+    (defvar acl2-skip-shell nil)
+    (setq acl2-skip-shell t)
+    (load "/Users/atharvashukla/Documents/acl2s/send-form.lisp")
+    (load "/Users/atharvashukla/Documents/acl2-sources/emacs/emacs-acl2.el")
+    #+END_SRC
+** Standard ML
+   Use package specification for the SML mode
+   autoloading the mode
+   setting the EXEC PATH for the sml executable (downloaded via homebrew)
+   I think this just allows you to specify sml as a compiler command in the mode
+   Highlighting for SML code
+   #+BEGIN_SRC emacs-lisp
+   (use-package sml-mode
+     :ensure t
+     :defer t)
+   (autoload 'sml-mode  "sml-mode" "Mode for editing SML." t)
+   (setq exec-path (cons "/usr/local/Cellar/smlnj/110.84/bin"  exec-path))
+   (setq sml-program-name "sml")
+   (global-font-lock-mode 1)
+   #+END_SRC
+** Latex setup
+  auctex setup using the ~use-package~
+  setting the PATH for Tex
+  setting the EXEC-PATH for Tex
+    #+BEGIN_SRC emacs-lisp
+    (use-package auctex
+      :ensure t
+      :defer t
+      :config
+      (setq TeX-engine 'xetex)
+      (setq latex-run-command "xelatex"))
+    (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
+    (setq exec-path (append exec-path '("/Library/TeX/texbin/")))
+    #+END_SRC
+** Org mode settings
+  remove the org footer details
+  Org bullet mode: better bullets
+    #+BEGIN_SRC emacs-lisp
+    (setq org-html-postamble nil)
+    (use-package org-bullets
+      :ensure t
+      :defer t
+      :hook (org-mode . (lambda () (org-bullets-mode 1))))
+
+      (add-hook 'org-mode-hook (lambda () (org-bullets-mode)))
+    #+END_SRC
+
+* Packages
+** smartparent
+#+BEGIN_SRC emacs-lisp
+(use-package smartparens-config
+  :ensure smartparens
+  :config
+  (progn
+    (show-smartparens-global-mode t)))
+(add-hook 'prog-mode-hook #'smartparens-mode)
+#+END_SRC
+** which-key
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :ensure t
+  :defer 2
+  :config
+  (which-key-mode))
+#+END_SRC
