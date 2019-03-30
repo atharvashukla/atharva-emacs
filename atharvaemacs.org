@@ -47,8 +47,8 @@
 ** Font setup
  A bigger font size on startup and (commented out) the IBM VGA9 font <3
     #+BEGIN_SRC emacs-lisp
-    (set-face-attribute 'default nil :height 200)
-    ; (set-frame-font "PxPlus IBM VGA9" nil t)
+      (set-face-attribute 'default nil :height 200)
+  ;   (set-frame-font "PxPlus IBM VGA9" nil t)
     #+END_SRC
 * Custom Keybindings
  yes or no to y or n
@@ -66,6 +66,7 @@
     (use-package racket-mode
       :ensure t
       :config (setq racket-program "/usr/local/bin/racket"))
+      (add-hook 'racket-mode-hook #'racket-unicode-input-method-enable)
     #+END_SRC
 
 ** ACL2 setup
@@ -75,8 +76,8 @@
     #+BEGIN_SRC emacs-lisp
     (defvar acl2-skip-shell nil)
     (setq acl2-skip-shell t)
-    (load "/Users/atharvashukla/Documents/acl2s/send-form.lisp")
-    (load "/Users/atharvashukla/Documents/acl2-sources/emacs/emacs-acl2.el")
+    (load "/Users/atharvashukla/Documents/acl2/books/acl2s/send-form.lisp")
+    (load "/Users/atharvashukla/Documents/acl2/emacs/emacs-acl2.el")
     #+END_SRC
 ** Standard ML
    Use package specification for the SML mode
@@ -123,18 +124,27 @@
 * Packages
 ** smartparent
 #+BEGIN_SRC emacs-lisp
-(use-package smartparens-config
-  :ensure smartparens
-  :config
-  (progn
-    (show-smartparens-global-mode t)))
-(add-hook 'prog-mode-hook #'smartparens-mode)
+  (use-package smartparens-config
+    :ensure smartparens
+    :config
+    (progn
+      (show-smartparens-global-mode t)))
+  (add-hook 'prog-mode-hook #'smartparens-mode)
 #+END_SRC
 ** which-key
 #+BEGIN_SRC emacs-lisp
-(use-package which-key
-  :ensure t
-  :defer 2
-  :config
-  (which-key-mode))
+  ;; (use-package which-key
+  ;;   :ensure t
+  ;;   :defer 2
+  ;;   :config
+  ;;   (which-key-mode))
 #+END_SRC
+** yasnippet
+   #+BEGIN_SRC emacs-lisp
+   (use-package yasnippet
+    :ensure t
+    :init (yas-global-mode 1))
+
+   (use-package yasnippet-snippets
+     :ensure t)
+   #+END_SRC
