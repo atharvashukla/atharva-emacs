@@ -18,10 +18,11 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("585942bb24cab2d4b2f74977ac3ba6ddbd888e3776b9d2f993c5704aa8bb4739" "8f97d5ec8a774485296e366fdde6ff5589cf9e319a584b845b6f7fa788c9fa9a" default)))
+    ("1436d643b98844555d56c59c74004eb158dc85fc55d2e7205f8d9b8c860e177f" "585942bb24cab2d4b2f74977ac3ba6ddbd888e3776b9d2f993c5704aa8bb4739" "8f97d5ec8a774485296e366fdde6ff5589cf9e319a584b845b6f7fa788c9fa9a" default)))
  '(package-selected-packages
    (quote
-    (ace-window esup ## gruvbox-theme smartparens yasnippet-snippets yasnippet org-bullets auctex sml-mode racket-mode use-package))))
+    (heaven-and-hell edit-indirect markdown-mode multiple-cursors rainbow-delimiters exec-path-from-shell beacon ace-window esup ## gruvbox-theme smartparens yasnippet-snippets yasnippet org-bullets auctex sml-mode racket-mode use-package)))
+ '(pdf-view-midnight-colors (quote ("#fdf4c1" . "#32302f"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -34,7 +35,7 @@
 ;; maximize the emacs  window to full screen on startup
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; make the default font size bigger on startup
-;; (including the modeline)
+;; (including the modelinpe)
 ;; (set-face-attribute 'default nil :height 200)
 ;; open the "todo.org" file on startup to show Tasks 
 ;; (setq initial-buffer-choice "~/Documents/todo/todo.org")
@@ -55,36 +56,55 @@
 ;; the following ui settings are time consuming.. investigate workarounds
 ;; and also try to "defer" them ontp later activation
 ;; (display-time-mode 1) <<- this is taking 0.002 sec.. why?
-;; (scroll-bar-mode -1) 0.042sec!?
+;; (scroll-bar-mode -1) ;; 0.042sec!?
+;; setting to a key command to do it manually when needed
+(global-set-key (kbd "\e\es") 'scroll-bar-mode)
+
+;; When Delete Selection mode is enabled, typed text replaces the
+;; selection if the selection is active. Otherwise, typed text
+;; is just inserted at point regardless of any selection.
+(delete-selection-mode 1)
+
+;; no irritating scratch message
+(setq initial-scratch-message "")
 
 
+;; y/p instead of full yes/no
 (fset 'yes-or-no-p 'y-or-n-p)
+;; esc+esc+c to open the init file
 (global-set-key
  (kbd "\e\ec")
  (lambda () (interactive)
-   (find-file "~/.emacs.d/init.el"))) ;; <-- this is where my init is located
+   (find-file "~/.emacs.d/init.el")))
+
+;; RACKET 
 
 (use-package racket-mode
   :ensure t
-  :config (setq racket-program "/usr/local/bin/racket")) ;; <--- my racket path
+  :config (setq racket-program "/usr/local/bin/racket"))
 (add-hook 'racket-mode-hook #'racket-unicode-input-method-enable)
+
+;; ACL2
 
 (defvar acl2-skip-shell nil)
 (setq acl2-skip-shell t)
-;; FOR anyone using my init, these are paths to:
-;; ... send-form is Pete's file for nice emacs bindings for acl2 mode
+;; TODO: put these files within reach:
+;; config script should install the latest version?
 (load "/Users/atharvashukla/Documents/acl2/books/acl2s/send-form.lisp")
-;; this is distributed with acl2:
 (load "/Users/atharvashukla/Documents/acl2/emacs/emacs-acl2.el")
+
+;; SML
 
 (use-package sml-mode
   :ensure t
   :defer t)
+
 (autoload 'sml-mode  "sml-mode" "Mode for editing SML." t)
-;; path to my sml installation (using homebrew)
 (setq exec-path (cons "/usr/local/Cellar/smlnj/110.84/bin"  exec-path))
 (setq sml-program-name "sml")
-(global-font-lock-mode 1)
+;; (global-font-lock-mode 1)
+
+;; LATEX
 
 ;; (use-package auctex
 ;;   :ensure t
@@ -115,20 +135,30 @@
     (show-smartparens-global-mode t)))
 (add-hook 'prog-mode-hook #'smartparens-mode)
 
+;; menlo
+(set-face-attribute 'default nil
+                    :family "Menlo"
+                    :height 110
+                    :weight 'normal
+                    :width 'normal)
+
+(setq-default cursor-type 'bar)
+(set-cursor-color "#595959")
+
+
 
 ;; gruvbox theme, had to comment
 ;; out the latest neoframe stuff (bug)
 ;; see github bug filing for updates
 ;; https://github.com/greduan/emacs-theme-gruvbox/issues/133
-;; comment out the neotree stuff
 (use-package gruvbox-theme
   :ensure t
+  :defer t
   :config (load-theme 'gruvbox-dark-soft))
 
 
 ;; IDO mode: Interactively DO things
 ;; comes prepacked with emacs
-
 (setq ido-everywhere t)
 (ido-mode 1)
 
@@ -139,11 +169,40 @@
 ;; in the specified sequence will match
 (setq ido-enable-flex-matching t)
 
-
-;; emacs startup profiler
+;; emacs startup profiler - using it to see what commands take time
 (use-package esup
   :ensure t
   :config (autoload 'esup "esup" "Emacs Start Up Profiler." nil))
+
+;; disable the annoying bell ring sound
+(setq ring-bell-function 'ignore)
+;; show file size in modeline
+(size-indication-mode t)
+
+
+
+;; setting the path for macos
+(use-package exec-path-from-shell
+  :ensure  t
+  :config (exec-path-from-shell-initialize))
+
+;; add as a hook for lisp mode:
+;; TO-FIX: multi-line comments in Racket mode
+;; still disaply the colors of the parenthesis
+;; which is distracting - they should be greyed out.
+(use-package rainbow-delimiters
+  :ensure t
+  :config (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+;; MULTIPLE CURSORS
+(use-package multiple-cursors
+  :ensure t)
+
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+
+
+;; ----- FROZEN -----
 
 ;; +-----------------------+
 ;; | WINDOW CONFIGURATIONS |
@@ -152,31 +211,27 @@
 ;; Guide:
 ;;
 ;; winner-mode: C-c left (undo)
-;;              C-c right (redo
+;;              C-c right (redo)
 ;; wind-move: Shift-<Arrow Key>
 ;; ace-window C-o <num>
 
 
 ;; WINNER MODE
 ;; ===========
-;;> undo window stuff
-;; comes prepacked with emacs.
-;; The ‘fboundp’ test is for those XEmacs
-;; installations that don’t have winner-mode available.
-;;  getting back to a delicate WindowConfiguration is
-;; difficult. This is where Winner Mode comes in:
-;; With it, going back to a previous session is easy
+;; undo window stuff (comes prepacked with emacs.)
+;; The ‘fboundp’ test is for those XEmacs  installations that don’t have
+;; winner-mode available. getting back to a delicate WindowConfiguration
+;; is difficult. This is where Winner Mode comes in: With it, going back
+;; to a previous session is easy
 ;; (when (fboundp 'winner-mode)
 (winner-mode 1)
-;;  )
-
+;; )
 
 ;; WIND MOVE
 ;; =========
-;; move  from window to window using Shift and the arrow keys.
+;; move from window to window using Shift and the arrow keys.
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
-
 
 ;; ACE WINDOW
 ;; ==========
@@ -185,12 +240,36 @@
 ;; C-o ... which is annoying)
 (use-package ace-window
   :ensure t
-  :init
-  (progn
-    (global-set-key [remap other-window] 'ace-window)))
+  :init (progn (global-set-key [remap other-window] 'ace-window)))
+
+
+;;; END of Window Configurations ;;;
+
+;; --- CURSOR TWEAKS ---
+;; 1. a light follows the cursor after big movements
+(use-package beacon
+  :ensure t
+  :init (beacon-mode 1))
+
+;; --- end of cursor tweaks ---
+;; activate the packages
+
+
+(set-face-attribute 'default nil :height 200)
 
 
 
-;; -----------
 
-;; end of init.el
+(defun enable-gruvbox ()
+  (interactive)
+  (load-theme 'gruvbox-dark-soft t))
+
+(global-set-key (kbd "<f6>") 'enable-gruvbox)
+
+
+(defun disable-gruvbox ()
+  (interactive)
+  (disable-theme 'gruvbox-dark-soft))
+
+
+(global-set-key (kbd "<f7>") 'disable-gruvbox)
