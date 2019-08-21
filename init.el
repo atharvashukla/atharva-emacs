@@ -1,34 +1,38 @@
+;; manually add sml + acl2 files in lisp, emacs dirs
+
+
 ;; activate the packages
 (package-initialize)
 ;; obligatory melpa initialization
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 ;; fetch the list of packages available
-(unless package-archive-contents
-  (package-refresh-contents))
+
+;; (unless package-archive-contents
+;;   (package-refresh-contents))
+
 ;; install the missing packages
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
-
-;; use-package necessary
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("1436d643b98844555d56c59c74004eb158dc85fc55d2e7205f8d9b8c860e177f" "585942bb24cab2d4b2f74977ac3ba6ddbd888e3776b9d2f993c5704aa8bb4739" "8f97d5ec8a774485296e366fdde6ff5589cf9e319a584b845b6f7fa788c9fa9a" default)))
  '(package-selected-packages
    (quote
-    (heaven-and-hell edit-indirect markdown-mode multiple-cursors rainbow-delimiters exec-path-from-shell beacon ace-window esup ## gruvbox-theme smartparens yasnippet-snippets yasnippet org-bullets auctex sml-mode racket-mode use-package)))
- '(pdf-view-midnight-colors (quote ("#fdf4c1" . "#32302f"))))
+    (auctex multiple-cursors rainbow-delimiters exec-path-from-shell esup gruvbox-theme smartparens yasnippet-snippets yasnippet org-bullets beacon ace-window racket-mode use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+
+;; -----------------------------------------------------------------------------
+
+
 
 ;; don't show the startup message
 (setq inhibit-startup-message t)
@@ -68,6 +72,8 @@
 ;; no irritating scratch message
 (setq initial-scratch-message "")
 
+;; -----------------------------------------------------------------------------
+
 
 ;; y/p instead of full yes/no
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -84,25 +90,28 @@
   :config (setq racket-program "/usr/local/bin/racket"))
 (add-hook 'racket-mode-hook #'racket-unicode-input-method-enable)
 
-;; ACL2
-
-(defvar acl2-skip-shell nil)
-(setq acl2-skip-shell t)
-;; TODO: put these files within reach:
-;; config script should install the latest version?
-(load "/Users/atharvashukla/Documents/acl2/books/acl2s/send-form.lisp")
-(load "/Users/atharvashukla/Documents/acl2/emacs/emacs-acl2.el")
 
 ;; SML
 
-(use-package sml-mode
-  :ensure t
-  :defer t)
-
+;; pulled from sml git repo  and added sml-model.el to lisp dir. 
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+(load "sml-mode")
 (autoload 'sml-mode  "sml-mode" "Mode for editing SML." t)
 (setq exec-path (cons "/usr/local/Cellar/smlnj/110.84/bin"  exec-path))
 (setq sml-program-name "sml")
-;; (global-font-lock-mode 1)
+
+
+
+;; ACL2
+
+;; stop the shell from popping up every time I start emacs  
+(defvar acl2-skip-shell nil)
+(setq acl2-skip-shell t)
+;; the main acl2 emacs support  
+(load "emacs-acl2")
+;; ;; pete's send-form binding  
+(load "send-form")
+
 
 ;; LATEX
 
@@ -112,8 +121,9 @@
 ;;   :config
 ;;   (setq TeX-engine 'xetex)
 ;;   (setq latex-run-command "xelatex"))
-;; (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
-;; (setq exec-path (append exec-path '("/Library/TeX/texbin/")))
+
+(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
+(setq exec-path (append exec-path '("/Library/TeX/texbin/")))
 
 (setq org-html-postamble nil)
 (use-package org-bullets
@@ -256,8 +266,6 @@
 
 
 (set-face-attribute 'default nil :height 200)
-
-
 
 
 (defun enable-gruvbox ()
