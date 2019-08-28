@@ -12,6 +12,7 @@
 
 ;; install the missing packages
 (unless (package-installed-p 'use-package)
+  (package-refresh-contents)
   (package-install 'use-package))
 
 (custom-set-variables
@@ -108,9 +109,9 @@
 (defvar acl2-skip-shell nil)
 (setq acl2-skip-shell t)
 ;; the main acl2 emacs support  
-(load "emacs-acl2")
+;; (load "emacs-acl2")
 ;; ;; pete's send-form binding  
-(load "send-form")
+;; (load "send-form")
 
 
 ;; LATEX
