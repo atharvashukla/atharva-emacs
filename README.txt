@@ -8,9 +8,7 @@
 - y/p instead of yes or no
 - esc + esc + c to open the init.el
 - racket mode with unicode symbols enabled
-- acl2 mode using `send-form.el` and `emacs-acl2.el`
-- sml mode linking to `brew` sml
-- auctex (currently commented out)
+- sml mode linking to `brew` sml exec
 - fancy  bullets for org mode
 - yasnippets
 - smartparens
@@ -22,4 +20,9 @@
 - rainbow delims
 - window configs using: winner mode, wind move, ace-window
 - beacon mode
-- theme togglig funcitons with f6 and f7
+- theme toggling functions with f6 and f7
+
+
+other
+- auctex (currently commented out)
+- acl2 mode using `send-form.el` and `emacs-acl2.el`
