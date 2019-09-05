@@ -22,7 +22,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (auctex multiple-cursors rainbow-delimiters exec-path-from-shell esup gruvbox-theme smartparens yasnippet-snippets yasnippet org-bullets beacon ace-window racket-mode use-package))))
+    (which-key proof-general auctex multiple-cursors rainbow-delimiters exec-path-from-shell esup gruvbox-theme smartparens yasnippet-snippets yasnippet org-bullets beacon ace-window racket-mode use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -282,3 +282,14 @@
 
 
 (global-set-key (kbd "<f7>") 'disable-gruvbox)
+
+
+(use-package proof-general
+  :no-require t
+  :ensure t)
+
+
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode +1))
