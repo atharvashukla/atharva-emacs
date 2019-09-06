@@ -22,7 +22,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (which-key proof-general auctex multiple-cursors rainbow-delimiters exec-path-from-shell esup gruvbox-theme smartparens yasnippet-snippets yasnippet org-bullets beacon ace-window racket-mode use-package))))
+    (company-coq which-key proof-general auctex multiple-cursors rainbow-delimiters exec-path-from-shell esup gruvbox-theme smartparens yasnippet-snippets yasnippet org-bullets beacon ace-window racket-mode use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -68,7 +68,7 @@
 ;; When Delete Selection mode is enabled, typed text replaces the
 ;; selection if the selection is active. Otherwise, typed text
 ;; is just inserted at point regardless of any selection.
-(delete-selection-mode 1)
+; (delete-selection-mode 1) ; why is this taking so much time
 
 ;; no irritating scratch message
 (setq initial-scratch-message "")
@@ -293,3 +293,7 @@
   :ensure t
   :config
   (which-key-mode +1))
+
+(use-package company-coq
+  :ensure t
+  :init (add-hook 'coq-mode-hook #'company-coq-mode))
