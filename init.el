@@ -26,7 +26,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq ring-bell-function 'ignore)
 (size-indication-mode t)
-(setq-default cursor-type 'bar)
+; (setq-default cursor-type 'bar)
 (set-cursor-color "#595959")
 
 (setq ido-everywhere t)
@@ -154,13 +154,48 @@
 
 (use-package auctex
   :ensure t
-  :defer t
-  :config
-  (progn
-    (setq TeX-engine 'xetex)
-    (setq latex-run-command "xelatex")
-    (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
-    (setq exec-path (append exec-path '("/Library/TeX/texbin/")))))
+  :defer t)
+
+;; AucTeX
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+
+(setq TeX-PDF-mode t)
+(setq preview-image-type (quote dvipng))
+
+(add-hook 'LaTeX-mode-hook (lambda ()
+  (push
+    '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
+      :help "Run latexmk on file")
+    TeX-command-list)))
+(add-hook 'LaTeX-mode-hook
+          (lambda () (local-set-key (kbd "<S-s-mouse-1>") #'TeX-view)))
+
+(dolist (dir '("/Applications/Skim.app/Contents/SharedSupport"))
+  (add-to-list 'exec-path dir))
+
+(setq TeX-view-program-list
+      '(("Preview.app" "open -a Preview.app %o")
+        ("Skim" "open -a Skim.app %o")
+        ("displayline" "displayline -g -b %n %o %b")
+        ("open" "open %o"))
+      TeX-view-program-selection
+      '((output-dvi "open")
+        (output-pdf "Skim")
+        (output-html "open")))
+
+(setq TeX-command-force "LaTeX") (setq TeX-clean-confirm t)
+
+(setq doc-view-resolution 600)
+
+
+
+(setq latex-run-command "xelatex")
+(setq TeX-engine 'xetex)
+(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
+(setq exec-path (append exec-path '("/Library/TeX/texbin/")))
+
 
 
 (defvar acl2-skip-shell nil)
@@ -172,3 +207,9 @@
 ;; ------------------------------
 
 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
